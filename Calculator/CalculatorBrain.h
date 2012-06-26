@@ -10,6 +10,7 @@
 
 @interface CalculatorBrain : NSObject
 
+// Public API
 - (void)pushOperand:(double)operand;
 - (double)performOperation:(NSString *)operation;
 
