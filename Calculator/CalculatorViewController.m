@@ -29,8 +29,21 @@
 
 - (IBAction)digitPressed:(UIButton *)sender {
     NSString *digit = sender.currentTitle;
-    if ([digit isEqualToString:@"π"]) digit = @"3.145";
+    NSString *str = self.display.text;
+    // FIXME temporarily setting Pi
+    // if ([digit isEqualToString:@"π"]) digit = M_PI;
     
+    // Do not allow multiple decimal points
+    if ([digit isEqualToString:@"."]) {
+        NSArray *fields = [str componentsSeparatedByString:@"."];
+        NSUInteger numberofFields = fields.count;
+//        NSLog(@"Fields: %@", fields);
+//        NSLog(@"Number of fields: %u", numberofFields);
+        if (numberofFields > 1) {
+            // Multiple decimal points
+            return; 
+        }
+    }
     if (self.userIsInTheMiddleOfEnteringANumber) {
         self.display.text = [self.display.text stringByAppendingFormat:digit];
     } else {
