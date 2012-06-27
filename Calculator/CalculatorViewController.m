@@ -12,6 +12,7 @@
 @interface CalculatorViewController()
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
 @property (strong, nonatomic) CalculatorBrain *brain;
+@property (weak, nonatomic) IBOutlet UILabel *program;
 @end
 
 @implementation CalculatorViewController
@@ -19,6 +20,7 @@
 @synthesize display = _display;
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize brain = _brain;
+@synthesize program = _program;
 
 // Lazy instantiation of Array 
 - (CalculatorBrain *)brain {
@@ -46,7 +48,7 @@
     }
     // Add digits to display string
     if (self.userIsInTheMiddleOfEnteringANumber) {
-        self.display.text = [self.display.text stringByAppendingFormat:digit];
+        self.display.text = [displayString stringByAppendingFormat:digit];
     } else {
         self.display.text = digit;
         self.userIsInTheMiddleOfEnteringANumber = YES;
@@ -58,8 +60,9 @@
 //
 - (IBAction)clearPressed {
     self.userIsInTheMiddleOfEnteringANumber = NO;
-    // Clear display
+    // Clear display(s)
     self.display.text = @"0";
+    self.program.text = @"0";
     // Clear stack
     [self.brain performOperation: @"CLEAR"];
 }
@@ -67,23 +70,48 @@
 //
 // enter Key Pressed
 //
-- (IBAction)enterPressed {
-    [self.brain pushOperand:[self.display.text doubleValue]];
+- (IBAction)enterPressed {    
+    NSString *displayString = self.display.text;
+    NSString *programString = self.program.text;
+
+    // Catch corner case if user presses "." then Enter
+    if ([displayString isEqualToString:@"."]) return;
+
+    // Set program label
+    if ([programString isEqualToString:@"0"]) {
+        self.program.text = displayString;
+    } else {
+        self.program.text = [self.program.text stringByAppendingFormat:@" "];
+        self.program.text = [self.program.text stringByAppendingFormat:displayString];
+    }
+
+    // Push operand on stack
+    [self.brain pushOperand:[displayString doubleValue]];
     self.userIsInTheMiddleOfEnteringANumber = NO;
 }
 
 //
 // operation Key Pressed
 //
-- (IBAction)operationPressed:(id)sender {
+- (IBAction)operationPressed:(id)sender {    
+    NSString *operation = [sender currentTitle];
+    
     // If user presses a number then an operation, press Enter for the user
     if (self.userIsInTheMiddleOfEnteringANumber) {
         [self enterPressed];
     }
-    NSString *operation = [sender currentTitle];
+    
+    // Set program label
+    self.program.text = [self.program.text stringByAppendingFormat:@" "];
+    self.program.text = [self.program.text stringByAppendingFormat:operation];
+    //
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g", result];
 }
 
+- (void)viewDidUnload {
+    [self setProgram:nil];
+    [super viewDidUnload];
+}
 @end
 

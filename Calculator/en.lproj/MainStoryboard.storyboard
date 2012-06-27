@@ -359,6 +359,7 @@
                     </view>
                     <connections>
                         <outlet property="display" destination="ubr-S4-dhq" id="jjT-1o-Qx0"/>
+                        <outlet property="program" destination="LjN-SD-wHj" id="2SW-5b-Axy"/>
                     </connections>
                 </viewController>
             </objects>
@@ -369,6 +370,7 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/CalculatorViewController.h"/>
             <relationships>
                 <relationship kind="outlet" name="display" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="program" candidateClass="UILabel"/>
             </relationships>
         </class>
     </classes>
