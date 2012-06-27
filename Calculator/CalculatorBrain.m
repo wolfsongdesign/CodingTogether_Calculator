@@ -62,7 +62,7 @@
     if ([operation isEqualToString:@"+"]) {
         result = [self popOperand] + [self popOperand];
     // Multiplication
-    } else if ([@"*" isEqualToString:operation]) {
+    } else if ([operation isEqualToString:@"*"]) {
         result = [self popOperand] * [self popOperand];
     // Subtraction
     } else if ([operation isEqualToString:@"-"]) {

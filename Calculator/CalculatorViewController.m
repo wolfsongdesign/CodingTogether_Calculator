@@ -56,6 +56,15 @@
 }
 
 //
+// clear Key Pressed
+//
+- (IBAction)clearPressed {
+//    [self.brain removeAllObjects];
+    self.userIsInTheMiddleOfEnteringANumber = NO;
+    self.display.text = 0;
+}
+
+//
 // enter Key Pressed
 //
 - (IBAction)enterPressed {
