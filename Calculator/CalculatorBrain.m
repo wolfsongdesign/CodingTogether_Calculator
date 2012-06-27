@@ -59,8 +59,11 @@
 - (double)performOperation:(NSString *)operation {
     double result = 0;
     
+    // Clear
+    if ([operation isEqualToString:@"CLEAR"]) {
+        [_operandStack removeAllObjects];
     // Addition
-    if ([operation isEqualToString:@"+"]) {
+    } else if ([operation isEqualToString:@"+"]) {
         result = [self popOperand] + [self popOperand];
     // Multiplication
     } else if ([operation isEqualToString:@"*"]) {
@@ -73,6 +76,9 @@
     } else if ([operation isEqualToString:@"/"]) {
         double divisor = [self popOperand];
         if (divisor) result = [self popOperand] / divisor;
+    // Pi
+    } else if ([operation isEqualToString:@"π"]) {
+        result = M_PI;        
     // sin
     } else if ([operation isEqualToString:@"sin"]) {
         double num = [self popOperand];

@@ -35,8 +35,6 @@
     // FIXME using currentTitle of button instead of using localization
     NSString *digit = sender.currentTitle;
     NSString *displayString = self.display.text;
-    // FIXME temporarily setting Pi
-    // if ([digit isEqualToString:@"π"]) digit = M_PI;
     
     // Do not allow multiple decimal points
     if ([digit isEqualToString:@"."]) {
@@ -59,9 +57,11 @@
 // clear Key Pressed
 //
 - (IBAction)clearPressed {
-//    [self.brain removeAllObjects];
     self.userIsInTheMiddleOfEnteringANumber = NO;
-    self.display.text = 0;
+    // Clear display
+    self.display.text = @"0";
+    // Clear stack
+    [self.brain performOperation: @"CLEAR"];
 }
 
 //
