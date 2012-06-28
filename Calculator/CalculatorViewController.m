@@ -81,13 +81,29 @@
     if ([programString isEqualToString:@"0"]) {
         self.program.text = displayString;
     } else {
-        self.program.text = [self.program.text stringByAppendingFormat:@" "];
-        self.program.text = [self.program.text stringByAppendingFormat:displayString];
+        self.program.text = [self.program.text stringByAppendingFormat:@" %@", displayString];
     }
 
     // Push operand on stack
     [self.brain pushOperand:[displayString doubleValue]];
     self.userIsInTheMiddleOfEnteringANumber = NO;
+}
+
+//
+// plus/minus Key Pressed
+//
+- (IBAction)plusMinusPressed {
+    NSString *displayString = self.display.text;
+    
+    // Add or remove leading "-" from string 
+    if ( [displayString compare:@"-" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame)
+    {
+        // Return substring after the "-" 
+        self.display.text = [displayString substringFromIndex:(1)];
+    } else {
+        // Prepend "-" to displayString 
+        self.display.text = [NSString stringWithFormat:@"-%@", displayString];
+    }
 }
 
 //
