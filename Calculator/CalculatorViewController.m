@@ -77,6 +77,7 @@
     if ([displayString isEqualToString:@"."]) return;
 
     // Set program label
+    // Test to remove starting '0'
     if ([programString isEqualToString:@"0"]) {
         self.program.text = displayString;
     } else {
@@ -101,8 +102,13 @@
     }
     
     // Set program label
-    self.program.text = [self.program.text stringByAppendingFormat:@" "];
-    self.program.text = [self.program.text stringByAppendingFormat:operation];
+    // Test to remove starting '0'
+    if ([self.program.text isEqualToString:@"0"]) {
+        self.program.text = operation;
+    } else {
+        self.program.text = [self.program.text stringByAppendingFormat:@" "];
+        self.program.text = [self.program.text stringByAppendingFormat:operation];
+    }
     //
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g", result];
