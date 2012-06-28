@@ -42,9 +42,8 @@
     if ([digit isEqualToString:@"."]) {
         // Split string on "." and count number of fields
         NSArray *fields = [displayString componentsSeparatedByString:@"."];
-        NSUInteger numberofFields = fields.count;
-        // Return if more than 1 fields 
-        if (numberofFields > 1) return;
+        // Return if array is larger than 1 
+        if (fields.count > 1) return;
     }
     // Add digits to display string
     if (self.userIsInTheMiddleOfEnteringANumber) {
