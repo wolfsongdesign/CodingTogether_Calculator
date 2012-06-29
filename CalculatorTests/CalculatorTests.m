@@ -118,5 +118,14 @@ static CalculatorBrain *brain;
     STAssertEqualsWithAccuracy(d, 3.141592, 0.000001, @"Pi constant = 3.141592");
 }
 
+- (void)testClearOperation
+{
+    [brain pushOperand:1.2];
+    [brain pushOperand:3.4];
+    [brain performOperation:@"CLEAR"];
+    double d = [brain popOperand];
+    STAssertEqualsWithAccuracy(d, 0.0, 0.000001, @"Simple test of Clear");
+}
+
 
 @end
