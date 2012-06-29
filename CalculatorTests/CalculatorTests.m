@@ -36,6 +36,10 @@ static CalculatorBrain *brain;
 }
 */
 
+
+//
+// Stack tests
+//
 - (void)testPopOnNewBrain
 {
     double d = [brain popOperand];
@@ -49,6 +53,10 @@ static CalculatorBrain *brain;
     STAssertEqualsWithAccuracy(d, 99.99, 0.000001, @"pop after push should return pushed operand");
 }
 
+
+//
+// Operation tests
+//
 - (void)testPerformValueAfterOperation
 {
     [brain pushOperand:1.2];
@@ -64,6 +72,50 @@ static CalculatorBrain *brain;
     [brain performOperation:@"+"];
     double d = [brain popOperand];
     STAssertEqualsWithAccuracy(d, 4.6, 0.000001, @"pop after perform should return correct value");
+}
+
+- (void)testSimpleAdditionOperation
+{
+    [brain pushOperand:1.2];
+    [brain pushOperand:3.4];
+    [brain performOperation:@"+"];
+    double d = [brain popOperand];
+    STAssertEqualsWithAccuracy(d, 4.6, 0.000001, @"Simple addition 1.2 3.4 + = 4.6");
+}
+
+- (void)testSimpleSubtractionOperation
+{
+    [brain pushOperand:1.2];
+    [brain pushOperand:3.4];
+    [brain performOperation:@"-"];
+    double d = [brain popOperand];
+    STAssertEqualsWithAccuracy(d, -2.2, 0.000001, @"Simple subtraction: 1.2 3.4 - = -2.2");
+}
+
+- (void)testSimpleMultiplicationOperation
+{
+    [brain pushOperand:1.2];
+    [brain pushOperand:3.4];
+    [brain performOperation:@"*"];
+    double d = [brain popOperand];
+    STAssertEqualsWithAccuracy(d, 4.08, 0.000001, @"Simple multiplication: 1.2 3.4 * = 4.08");
+}
+
+- (void)testSimpleDivisionOperation
+{
+    [brain pushOperand:4.2];
+    [brain pushOperand:2];
+    [brain performOperation:@"/"];
+    double d = [brain popOperand];
+    STAssertEqualsWithAccuracy(d, 2.1, 0.000001, @"Simple division: 1.2 3.4 / = 0.352941");
+}
+
+- (void)testSimpleNegationOperation
+{
+    [brain pushOperand:1.2];
+    [brain performOperation:@"π"];
+    double d = [brain popOperand];
+    STAssertEqualsWithAccuracy(d, 3.141592, 0.000001, @"Pi constant = 3.141592");
 }
 
 
