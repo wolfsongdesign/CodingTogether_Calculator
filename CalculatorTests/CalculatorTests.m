@@ -34,14 +34,20 @@ static CalculatorBrain *brain;
 {
     STFail(@"Unit tests are not implemented yet in CalculatorTests");
 }
-
+*/
 
 - (void)testPopOnNewBrain
 {
     double d = [brain popOperand];
     STAssertEqualsWithAccuracy(d, 0.0, 0.000001, @"pop on empty stack should be zero");
 }
-*/
+
+- (void)testPopOneOperand
+{
+    [brain pushOperand:99.99];
+    double d = [brain popOperand];
+    STAssertEqualsWithAccuracy(d, 99.99, 0.000001, @"pop after push should return pushed operand");
+}
 
 - (void)testPerformValueAfterOperation
 {
@@ -59,5 +65,6 @@ static CalculatorBrain *brain;
     double d = [brain popOperand];
     STAssertEqualsWithAccuracy(d, 4.6, 0.000001, @"pop after perform should return correct value");
 }
+
 
 @end
