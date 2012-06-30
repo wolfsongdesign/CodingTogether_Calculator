@@ -58,8 +58,7 @@
     self.userIsInTheMiddleOfEnteringANumber = NO;
     self.userEnteredADecimal = NO;
     // Clear display(s)
-    self.display.text = @"0";
-    self.program.text = @"0";
+    self.display.text = self.program.text = @"0";
     // Clear stack
     [self.brain performOperation: @"CLEAR"];
 }
@@ -121,6 +120,33 @@
     }
     // Set userEnteredADecimal
     self.userEnteredADecimal = YES;
+}
+
+//
+// backspace Key Pressed
+//
+- (IBAction)backspacePressed {
+    NSString *displayString = self.display.text;
+    NSUInteger lengthOfString = displayString.length;
+    
+    // Return if display is already 0
+    if ([displayString isEqualToString:@"0"]) return;
+    //
+    if (lengthOfString > 1) {
+        if (lengthOfString == 2) {
+            if ( [displayString compare:@"-" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame) {
+                self.display.text = @"0";
+                self.userIsInTheMiddleOfEnteringANumber = NO;
+            } else {
+                self.display.text = [displayString substringToIndex:(lengthOfString -1)];
+            }
+        } else {
+                self.display.text = [displayString substringToIndex:(lengthOfString -1)];
+        }
+    } else {
+        self.display.text = @"0";
+        self.userIsInTheMiddleOfEnteringANumber = NO;
+    }
 }
 
 //
