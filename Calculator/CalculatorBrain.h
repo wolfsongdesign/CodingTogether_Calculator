@@ -11,7 +11,6 @@
 @interface CalculatorBrain : NSObject
 
 // Public API
-//- (double)popOperand;
 - (void)pushOperand:(double)operand;
 - (double)performOperation:(NSString *)operation;
 
