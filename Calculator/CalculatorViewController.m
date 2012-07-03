@@ -12,6 +12,7 @@
 @interface CalculatorViewController()
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
 @property (nonatomic) BOOL userEnteredADecimal;
+@property (nonatomic) BOOL showEqualSignInProgramLabel;
 @property (strong, nonatomic) CalculatorBrain *brain;
 @property (weak, nonatomic) IBOutlet UILabel *program;
 @end
@@ -21,6 +22,7 @@
 @synthesize display = _display;
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize userEnteredADecimal = _userEnteredADecimal;
+@synthesize showEqualSignInProgramLabel = _showEqualSignInProgramLabel;
 @synthesize brain = _brain;
 @synthesize program = _program;
 
@@ -162,6 +164,8 @@
     
     // Reset userEnteredADecimal
     self.userEnteredADecimal = NO;
+    // Show Equal sign
+    self.showEqualSignInProgramLabel = YES;
     
     // Set program label
     // Test to remove starting '0'
