@@ -57,12 +57,32 @@
 }
 
 //
+// popDescriptionOffStack
+//
++ (NSString *)popDescriptionOffStack:(NSMutableArray *)stack {
+    NSString *result = @"-#-";
+    
+    id topOfStack = [stack lastObject];
+    if (topOfStack) [stack removeLastObject];
+    
+    if ([topOfStack isKindOfClass:[NSString class]]) {
+        NSString *operation = topOfStack;
+        // Addition
+        if ([operation isEqualToString:@"+"]) {
+//            result = [self popDescriptionOffStack:stack] + [self popDescriptionOffStack:stack];
+        }
+    }
+    
+    return result;
+}
+
+//
 // descriptionOfProgram
 //
 + (NSString *)descriptionOfProgram:(id)program {
     // Need to use recursion
     // Use NSSet 
-    return @"Implement this in Assignment 2";
+    return [self popDescriptionOffStack:program];
 }
 
 //
