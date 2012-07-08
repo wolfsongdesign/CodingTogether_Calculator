@@ -11,6 +11,6 @@
 @interface CalculatorViewController : UIViewController
 
 // Public API
-@property (weak, nonatomic) IBOutlet UILabel *display;
+//@property (weak, nonatomic) IBOutlet UILabel *display;
 
 @end

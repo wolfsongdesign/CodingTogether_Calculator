@@ -14,7 +14,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="0" textAlignment="right" lineBreakMode="tailTruncation" minimumFontSize="10" id="ubr-S4-dhq">
-                                <rect key="frame" x="20" y="49" width="235" height="40"/>
+                                <rect key="frame" x="20" y="49" width="280" height="40"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -141,7 +141,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="gzT-sn-Bm9">
-                                <rect key="frame" x="20" y="390" width="136" height="37"/>
+                                <rect key="frame" x="92" y="390" width="64" height="37"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal" title="0">
@@ -320,8 +320,8 @@
                                     <action selector="enterPressed" destination="2" eventType="touchUpInside" id="OWF-WU-Bal"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="0" textAlignment="right" lineBreakMode="tailTruncation" minimumFontSize="10" id="LjN-SD-wHj">
-                                <rect key="frame" x="20" y="20" width="280" height="21"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="" textAlignment="right" lineBreakMode="tailTruncation" minimumFontSize="10" id="LjN-SD-wHj">
+                                <rect key="frame" x="20" y="20" width="267" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -406,7 +406,7 @@
                                 </state>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="g29-Oe-VVE">
-                                <rect key="frame" x="263" y="49" width="37" height="40"/>
+                                <rect key="frame" x="20" y="390" width="64" height="37"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal" title="&lt;=">
@@ -420,11 +420,19 @@
                                     <action selector="backspacePressed" destination="2" eventType="touchUpInside" id="JwW-Ra-SOg"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="" textAlignment="right" lineBreakMode="tailTruncation" minimumFontSize="10" id="QUP-6X-7Ua">
+                                <rect key="frame" x="288" y="20" width="12" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.61213526895736359" green="0.62394863687329882" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <connections>
-                        <outlet property="display" destination="ubr-S4-dhq" id="jjT-1o-Qx0"/>
+                        <outlet property="display" destination="ubr-S4-dhq" id="5tv-dj-GBk"/>
+                        <outlet property="equalSignLabel" destination="QUP-6X-7Ua" id="Lvw-dL-NLO"/>
                         <outlet property="program" destination="LjN-SD-wHj" id="2SW-5b-Axy"/>
                     </connections>
                 </viewController>
@@ -436,6 +444,7 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/CalculatorViewController.h"/>
             <relationships>
                 <relationship kind="outlet" name="display" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="equalSignLabel" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="program" candidateClass="UILabel"/>
             </relationships>
         </class>
