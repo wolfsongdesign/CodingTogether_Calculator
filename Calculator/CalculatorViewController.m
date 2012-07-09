@@ -44,7 +44,7 @@
     NSString *digit = sender.currentTitle;
     
     // Hide Equal sign
-    self.equalSignLabel.text = @"";
+    self.equalSignLabel.text = @" ";
 
     // Add digits to display string
     if (self.userIsInTheMiddleOfEnteringANumber) {
@@ -63,9 +63,10 @@
     self.userIsInTheMiddleOfEnteringANumber = NO;
     self.userEnteredADecimal = NO;
     // Clear display(s)
-    self.display.text = self.program.text = @"0";
+    self.display.text = @"0"; 
+    self.program.text = @" ";
     // Hide Equal sign
-    self.equalSignLabel.text = @"";
+    self.equalSignLabel.text = @" ";
     // Clear stack
     [self.brain performOperation: @"CLEAR"];
 }
@@ -78,7 +79,7 @@
     NSString *programString = self.program.text;
     
     // Hide Equal sign
-    self.equalSignLabel.text = @"";
+    self.equalSignLabel.text = @" ";
 
     // Catch corner case if user presses "." then Enter
     if ([displayString isEqualToString:@"."]) return;
@@ -105,7 +106,7 @@
     NSString *displayString = self.display.text;
     
     // Hide Equal sign
-    self.equalSignLabel.text = @"";
+    self.equalSignLabel.text = @" ";
 
     // Add or remove leading "-" from string 
     if ( [displayString compare:@"-" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame)
@@ -123,7 +124,7 @@
 //
 - (IBAction)decimalPressed {
     // Hide Equal sign
-    self.equalSignLabel.text = @"";
+    self.equalSignLabel.text = @" ";
     
     // Check if decimal has already been pressed
     if (self.userEnteredADecimal) return;
