@@ -9,7 +9,7 @@
 
 #import "CalculatorBrain.h"
 
-// operandStack should be private
+// programStack should be private
 @interface CalculatorBrain()
 @property (strong, nonatomic) NSMutableArray *programStack;
 @end
@@ -18,6 +18,7 @@
 @implementation CalculatorBrain
 
 @synthesize programStack = _programStack;
+
 
 // Lazy instantiation of programStack 
 - (NSMutableArray *)programStack {
@@ -46,7 +47,9 @@
 //
 - (double)performOperation:(NSString *)operation {
     [self.programStack addObject:operation];
-    return [CalculatorBrain runProgram:self.program];
+    // call the class method
+    // better to use [self class] than CalculatorBrain due to inheritance
+    return [[self class] runProgram:self.program];
 }
 
 //
@@ -60,29 +63,79 @@
 // popDescriptionOffStack
 //
 + (NSString *)popDescriptionOffStack:(NSMutableArray *)stack {
-    NSString *result = @"-#-";
+    NSString *description = @"";
     
     id topOfStack = [stack lastObject];
-    if (topOfStack) [stack removeLastObject];
+    // Remove last opbject off stack or return empty string
+    if (topOfStack) [stack removeLastObject]; else return @"";
     
-    if ([topOfStack isKindOfClass:[NSString class]]) {
+    if ([topOfStack isKindOfClass:[NSNumber class]]) {
+        // If number, return as string
+        description = [topOfStack stringValue]; 
+    } else if ([topOfStack isKindOfClass:[NSString class]]) {
+        // If string, need to process operation and add brackets
         NSString *operation = topOfStack;
         // Addition
         if ([operation isEqualToString:@"+"]) {
-//            result = [self popDescriptionOffStack:stack] + [self popDescriptionOffStack:stack];
+            NSString *second = [self popDescriptionOffStack:stack];
+            NSString *first  = [self popDescriptionOffStack:stack];
+            description = [NSString stringWithFormat:@"(%@ + %@)", first, second];
+        // Multiplication
+        } else if ([operation isEqualToString:@"*"]) {
+            NSString *second = [self popDescriptionOffStack:stack];
+            NSString *first  = [self popDescriptionOffStack:stack];
+            description = [NSString stringWithFormat:@"(%@ * %@)", first, second];
+        // Subtraction
+        } else if ([operation isEqualToString:@"-"]) {
+            NSString *second = [self popDescriptionOffStack:stack];
+            NSString *first  = [self popDescriptionOffStack:stack];
+            description = [NSString stringWithFormat:@"(%@ - %@)", first, second];
+        // Division
+        } else if ([operation isEqualToString:@"/"]) {
+            NSString *second = [self popDescriptionOffStack:stack];
+            NSString *first  = [self popDescriptionOffStack:stack];
+            description = [NSString stringWithFormat:@"(%@ / %@)", first, second];
+        // sqrt
+        } else if ([operation isEqualToString:@"sqrt"]) {
+            description = [NSString stringWithFormat:@"sqrt(%@)", [self popDescriptionOffStack:stack]];
+        // CLEAR
+        } else if ([operation isEqualToString:@"CLEAR"]) {
+            [stack removeAllObjects];
         }
     }
     
-    return result;
+    return description;
 }
 
 //
 // descriptionOfProgram
 //
+// Use NSSet 
 + (NSString *)descriptionOfProgram:(id)program {
-    // Need to use recursion
-    // Use NSSet 
-    return [self popDescriptionOffStack:program];
+    // Main stack
+    NSMutableArray *stack;
+    NSMutableArray *expressionStack;
+    
+    // Check that program isKindOfClass: NSArray
+    if ([program isKindOfClass:[NSArray class]]) {
+        stack = [program mutableCopy];
+        if (!expressionStack) {
+            expressionStack = [[NSMutableArray alloc] init];
+        }
+    } else {
+        return @"Program not of Type NSArray!";
+    }
+    
+    // Step through stack
+    while (stack.count > 0) {
+        NSLog(@"Expressions: %@", expressionStack);
+        // add objects to the beginning of the array so
+        // program displays expressions in chronological order
+        [expressionStack insertObject:[self popDescriptionOffStack:stack] atIndex:0];
+    }
+    
+    // Seperate programs by comma 
+    return [expressionStack componentsJoinedByString:@", "]; 
 }
 
 //
@@ -146,7 +199,6 @@
     }
     return [self popOperandOffStack:stack];
 }
-
 
 
 @end

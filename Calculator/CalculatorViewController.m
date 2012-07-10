@@ -12,15 +12,19 @@
 @interface CalculatorViewController()
 @property (weak, nonatomic) IBOutlet UILabel *display;
 @property (weak, nonatomic) IBOutlet UILabel *equalSignLabel;
+@property (weak, nonatomic) IBOutlet UILabel *programDescriptionLabel;
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
-@property (nonatomic) BOOL userEnteredADecimal;@property (strong, nonatomic) CalculatorBrain *brain;
+@property (nonatomic) BOOL userEnteredADecimal;
+@property (strong, nonatomic) CalculatorBrain *brain;
 @property (weak, nonatomic) IBOutlet UILabel *program;
 @end
+
 
 @implementation CalculatorViewController
 
 @synthesize display = _display;
 @synthesize equalSignLabel = _equalSignLabel;
+@synthesize programDescriptionLabel = _programDescriptionLabel;
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize userEnteredADecimal = _userEnteredADecimal;
 @synthesize brain = _brain;
@@ -64,7 +68,7 @@
     self.userEnteredADecimal = NO;
     // Clear display(s)
     self.display.text = @"0"; 
-    self.program.text = @" ";
+    self.program.text = self.programDescriptionLabel.text = @" ";
     // Hide Equal sign
     self.equalSignLabel.text = @" ";
     // Clear stack
@@ -208,8 +212,12 @@
     } else {
         self.program.text = [programString stringByAppendingFormat:@" %@", operation];
     }
+        
     //
     double result = [self.brain performOperation:operation];
+    
+    // Set programDescription label
+    self.programDescriptionLabel.text = [CalculatorBrain descriptionOfProgram:[self.brain program]];
     self.display.text = [NSString stringWithFormat:@"%g", result];
 }
 
@@ -217,6 +225,7 @@
     [self setProgram:nil];
     [self setDisplay:nil];
     [self setEqualSignLabel:nil];
+    [self setProgramDescriptionLabel:nil];
     [super viewDidUnload];
 }
 @end
