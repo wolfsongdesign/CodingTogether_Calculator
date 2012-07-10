@@ -43,6 +43,13 @@
 }
 
 //
+// pushOperand
+//
+- (void)pushVariable:(NSString *)variable {
+    [self.programStack addObject:variable];
+}
+
+//
 // performOperation
 //
 - (double)performOperation:(NSString *)operation {
@@ -57,6 +64,20 @@
 //
 - (id)program {
     return [self.programStack copy];
+}
+
+//
+// variablesUsedInProgram
+//
++ (NSSet *)variablesUsedInProgram:(id)program {
+    // check for variables used
+    NSSet *variablesSetUsedInProgram;
+    //
+    if (!variablesSetUsedInProgram) {
+        variablesSetUsedInProgram =[[NSSet alloc]init];
+    }
+
+    return variablesSetUsedInProgram;
 }
 
 //
@@ -79,7 +100,12 @@
         if ([operation isEqualToString:@"+"]) {
             NSString *second = [self popDescriptionOffStack:stack];
             NSString *first  = [self popDescriptionOffStack:stack];
-            description = [NSString stringWithFormat:@"(%@ + %@)", first, second];
+            if (( [first compare:@"(" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame) && 
+                ( [second compare:@")" options:0 range:NSMakeRange(second.length-1, 1)] == NSOrderedSame)) {
+                description = [NSString stringWithFormat:@"(%@ + %@)", first, second];
+            } else {
+                description = [NSString stringWithFormat:@"(%@ + %@)", first, second];
+            }
         // Multiplication
         } else if ([operation isEqualToString:@"*"]) {
             NSString *second = [self popDescriptionOffStack:stack];
@@ -95,15 +121,44 @@
             NSString *second = [self popDescriptionOffStack:stack];
             NSString *first  = [self popDescriptionOffStack:stack];
             description = [NSString stringWithFormat:@"(%@ / %@)", first, second];
+        // Pi
+        } else if ([operation isEqualToString:@"π"]) {
+            description = @"π";        
+        // sin
+        } else if ([operation isEqualToString:@"sin"]) {
+            NSString *first  = [self popDescriptionOffStack:stack];
+            if (( [first compare:@"(" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame) && 
+                ( [first compare:@")" options:0 range:NSMakeRange(first.length-1, 1)] == NSOrderedSame)) {
+                description = [NSString stringWithFormat:@"sin%@", first];
+            } else {
+                description = [NSString stringWithFormat:@"sin(%@)", first];
+            }
+        // cos
+        } else if ([operation isEqualToString:@"cos"]) {
+            NSString *first  = [self popDescriptionOffStack:stack];
+            if (( [first compare:@"(" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame) && 
+                ( [first compare:@")" options:0 range:NSMakeRange(first.length-1, 1)] == NSOrderedSame)) {
+                description = [NSString stringWithFormat:@"cos%@", first];
+            } else {
+                description = [NSString stringWithFormat:@"cos(%@)", first];
+            }
         // sqrt
         } else if ([operation isEqualToString:@"sqrt"]) {
-            description = [NSString stringWithFormat:@"sqrt(%@)", [self popDescriptionOffStack:stack]];
+            NSString *first  = [self popDescriptionOffStack:stack];
+            if (( [first compare:@"(" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame) && 
+                ( [first compare:@")" options:0 range:NSMakeRange(first.length-1, 1)] == NSOrderedSame)) {
+                description = [NSString stringWithFormat:@"sqrt%@", first];
+            } else {
+                description = [NSString stringWithFormat:@"sqrt(%@)", first];
+            }
         // CLEAR
         } else if ([operation isEqualToString:@"CLEAR"]) {
             [stack removeAllObjects];
+        } else if ([operation isEqualToString:@"variable"]) {
+            description = topOfStack;
         }
     }
-    
+        
     return description;
 }
 
@@ -197,6 +252,12 @@
     if ([program isKindOfClass:[NSArray class]]) {
         stack = [program mutableCopy];
     }
+    return [self popOperandOffStack:stack];
+}
+
++(double)runProgram:(id)program usingVariableValues:(NSDictionary *)variableValues {
+    NSMutableArray *stack;
+
     return [self popOperandOffStack:stack];
 }
 

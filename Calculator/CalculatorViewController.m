@@ -11,24 +11,22 @@
 
 @interface CalculatorViewController()
 @property (weak, nonatomic) IBOutlet UILabel *display;
-@property (weak, nonatomic) IBOutlet UILabel *equalSignLabel;
 @property (weak, nonatomic) IBOutlet UILabel *programDescriptionLabel;
+@property (weak, nonatomic) IBOutlet UILabel *variableValueLabel;
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
 @property (nonatomic) BOOL userEnteredADecimal;
 @property (strong, nonatomic) CalculatorBrain *brain;
-@property (weak, nonatomic) IBOutlet UILabel *program;
 @end
 
 
 @implementation CalculatorViewController
 
 @synthesize display = _display;
-@synthesize equalSignLabel = _equalSignLabel;
 @synthesize programDescriptionLabel = _programDescriptionLabel;
+@synthesize variableValueLabel = _variableValueLabel;
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize userEnteredADecimal = _userEnteredADecimal;
 @synthesize brain = _brain;
-@synthesize program = _program;
 
 //
 // Lazy instantiation of Array 
@@ -47,9 +45,6 @@
     // FIXME using currentTitle of button instead of using localization
     NSString *digit = sender.currentTitle;
     
-    // Hide Equal sign
-    self.equalSignLabel.text = @" ";
-
     // Add digits to display string
     if (self.userIsInTheMiddleOfEnteringANumber) {
         self.display.text = [self.display.text stringByAppendingFormat:digit];
@@ -68,9 +63,7 @@
     self.userEnteredADecimal = NO;
     // Clear display(s)
     self.display.text = @"0"; 
-    self.program.text = self.programDescriptionLabel.text = @" ";
-    // Hide Equal sign
-    self.equalSignLabel.text = @" ";
+    self.programDescriptionLabel.text = @" ";
     // Clear stack
     [self.brain performOperation: @"CLEAR"];
 }
@@ -80,27 +73,18 @@
 //
 - (IBAction)enterPressed {    
     NSString *displayString = self.display.text;
-    NSString *programString = self.program.text;
     
-    // Hide Equal sign
-    self.equalSignLabel.text = @" ";
-
     // Catch corner case if user presses "." then Enter
     if ([displayString isEqualToString:@"."]) return;
     
-    // Set program label
-    // Test to remove starting '0'
-    if ([programString isEqualToString:@"0"]) {
-        self.program.text = displayString;
-    } else {
-        self.program.text = [programString stringByAppendingFormat:@" %@", displayString];
-    }
     // Set BOOLs
     self.userIsInTheMiddleOfEnteringANumber = NO;
     self.userEnteredADecimal = NO;
 
     // Push operand on stack
     [self.brain pushOperand:[displayString doubleValue]];
+    // Set label
+    self.programDescriptionLabel.text = [[CalculatorBrain class] descriptionOfProgram:self.brain.program];
 }
 
 //
@@ -109,9 +93,6 @@
 - (IBAction)plusMinusPressed {
     NSString *displayString = self.display.text;
     
-    // Hide Equal sign
-    self.equalSignLabel.text = @" ";
-
     // Add or remove leading "-" from string 
     if ( [displayString compare:@"-" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame)
     {
@@ -127,9 +108,6 @@
 // decimal Key Pressed
 //
 - (IBAction)decimalPressed {
-    // Hide Equal sign
-    self.equalSignLabel.text = @" ";
-    
     // Check if decimal has already been pressed
     if (self.userEnteredADecimal) return;
     // Add decimal to display string
@@ -179,11 +157,26 @@
             self.display.text = [displayString substringToIndex:(lengthOfString -1)];
         }
     } else {
-        // lengthOfString == 0/1, set display to '0'
+        // lengthOfString == 0 or 1, set display to '0'
         self.display.text = @"0";
         self.userIsInTheMiddleOfEnteringANumber = NO;
         self.userEnteredADecimal = NO;
     }
+}
+
+//
+// variable Key Pressed
+//
+- (IBAction)variablePressed:(UIButton *)sender {
+    NSString *variable = sender.currentTitle;
+    
+    // Press Enter for the user
+    if (self.userIsInTheMiddleOfEnteringANumber) {
+        [self enterPressed];
+    }
+    
+    [self.brain pushVariable:variable];
+    self.display.text = variable;
 }
 
 //
@@ -199,20 +192,7 @@
     
     // Reset userEnteredADecimal
     self.userEnteredADecimal = NO;
-    // Show Equal sign
-    if (![operation isEqualToString:@"π"]) {
-        self.equalSignLabel.text = @"=";
-    }
     
-    // Set program label
-    // Test to remove starting '0'
-    NSString *programString = self.program.text;
-    if ([programString isEqualToString:@"0"]) {
-        self.program.text = operation;
-    } else {
-        self.program.text = [programString stringByAppendingFormat:@" %@", operation];
-    }
-        
     //
     double result = [self.brain performOperation:operation];
     
@@ -222,10 +202,9 @@
 }
 
 - (void)viewDidUnload {
-    [self setProgram:nil];
     [self setDisplay:nil];
-    [self setEqualSignLabel:nil];
     [self setProgramDescriptionLabel:nil];
+    [self setVariableValueLabel:nil];
     [super viewDidUnload];
 }
 @end
