@@ -36,6 +36,17 @@
 }
 
 //
+// popOffStack
+//
+- (id)popOffStack {
+    // Check to make sure there is one object on stack
+    id topOfStack = [self.programStack lastObject];
+    if (topOfStack) [self.programStack removeLastObject];
+    // Return last object
+    return topOfStack;
+}
+
+//
 // pushOperand
 //
 - (void)pushOperand:(double)operand {
@@ -83,6 +94,19 @@
     return [set containsObject:operation];
 }
 
+//
+// isVariable
+//
++ (BOOL)isVariable:(NSString *)variable {
+    // Set of variable
+    NSSet *set = [NSSet setWithObjects: @"x", @"y", @"a", @"b", nil];
+    
+    return [set containsObject:variable];
+}
+
+//
+// isWrappedInParens
+//
 + (BOOL)isWrappedInParens:(NSString *)str {
     return ([str hasPrefix:@"("] && [str hasSuffix:@")"]);
 }
@@ -105,10 +129,14 @@
 //
 + (NSString *)formatTwoOperandExpression:(NSString *)str1 second:(NSString *)str2 withOperator:(NSString *)opr {
     NSString *description = @"";
-    if ([opr isEqualToString:@"+"] || [opr isEqualToString:@"-"]) {
-        description = [NSString stringWithFormat:@"%@ %@ %@", str1, opr, str2];
-    } else {
+    if ([opr isEqualToString:@"+"] /* || [opr isEqualToString:@"-"] */) {
+        if ([str1 hasPrefix:@"("] && [str2 hasSuffix:@")"]) {
+            description = [NSString stringWithFormat:@"%@ %@ %@", [str1 substringFromIndex:1], opr, [str2 substringToIndex:str2.length - 1]];
+        } else {
         description = [NSString stringWithFormat:@"(%@ %@ %@)", str1, opr, str2];
+        }
+    } else {
+        description = [NSString stringWithFormat:@"%@ %@ %@", str1, opr, str2];
     }
     return description;
 }
@@ -189,8 +217,9 @@
         // CLEAR
         } else if ([operation isEqualToString:@"CLEAR"]) {
             [stack removeAllObjects];
+            ;
         // Handle variables
-        } else if ([operation isEqualToString:@"variable"]) {
+        } else if ([self isVariable:operation]) {
             description = topOfStack;
         }
     }
@@ -201,7 +230,6 @@
 //
 // descriptionOfProgram
 //
-// Use NSSet 
 + (NSString *)descriptionOfProgram:(id)program {
     // Main stack
     NSMutableArray *stack;
@@ -217,7 +245,7 @@
     } else {
         return @"Program not of Type NSArray!";
     }
-    
+
     // Step through stack
     while (stack.count > 0) {
         // add objects to the beginning of the array so
@@ -225,8 +253,12 @@
         [expressionArray insertObject:[self popDescriptionOffStack:stack] atIndex:0];
     }
     
-    // Seperate programs by comma 
-    return [expressionArray componentsJoinedByString:@", "]; 
+    // Seperate programs by comma
+    if (expressionArray.count > 1) {
+        return [expressionArray componentsJoinedByString:@", "];
+    } else {
+        return expressionArray.lastObject; 
+    }
 }
 
 //
@@ -293,9 +325,7 @@
     NSMutableArray *stack;
     if ([program isKindOfClass:[NSArray class]]) {
         stack = [program mutableCopy];
-    }
-    bool test = [self isWrappedInParens:@"(sldkfjsdlkjfsd lskdjflk)"];
-    
+    }    
 
     // iterate over each entry in stack (program)
     for (int i=0; i < [stack count]; i++) {

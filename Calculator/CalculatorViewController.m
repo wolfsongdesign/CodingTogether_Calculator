@@ -129,14 +129,7 @@
 - (IBAction)backspacePressed {
     NSString *displayString = self.display.text;
     NSUInteger lengthOfString = displayString.length;
-    
-    // Return if display is already 0
-    if ([displayString isEqualToString:@"0"]) {
-        self.userIsInTheMiddleOfEnteringANumber = NO;
-        self.userEnteredADecimal = NO;
-        return;
-    }
-    // FIXME
+
     // Probably too verbose due to corner cases
     if (lengthOfString > 1) {
         // Check display for length == 2 
@@ -164,6 +157,13 @@
         self.display.text = @"0";
         self.userIsInTheMiddleOfEnteringANumber = NO;
         self.userEnteredADecimal = NO;
+        
+        // Pop last object off stack
+        [self.brain popOffStack];
+        // Recalculate displays
+        double result = [CalculatorBrain runProgram:self.brain.program];
+        self.display.text = [NSString stringWithFormat:@"%g", result];
+        self.programDescriptionLabel.text = [[CalculatorBrain class] descriptionOfProgram:self.brain.program];
     }
 }
 
@@ -200,7 +200,6 @@
     
     // Set programDescription label
     self.programDescriptionLabel.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
-    NSLog(@"Program: %@", self.brain.program);
     self.display.text = [NSString stringWithFormat:@"%g", result];
 }
 
@@ -214,10 +213,19 @@
     NSEnumerator *e = [variablesUsedSet objectEnumerator];
     id object;
     while (object = [e nextObject]) {
+        // Get key value
         NSString *val = [dictionary valueForKey:object];
-        [variablesArray addObject:[NSString stringWithFormat:@"%@ = %@", object, val]];
+        // Add key value to array if it exists
+        if (val) {
+            [variablesArray addObject:[NSString stringWithFormat:@"%@ = %@", object, val]];
+        }
     }
-    return [variablesArray componentsJoinedByString:@", "];
+    // Seperate programs by comma
+    if (variablesArray.count > 1) {
+        return [variablesArray componentsJoinedByString:@", "];
+    } else {
+        return variablesArray.lastObject; 
+    }
 }
 
 //
@@ -239,7 +247,7 @@
     
     // Retrieve the program
     NSArray *prog = testBrain.program;
-
+    
     // Setup the dictionary
     NSDictionary *dictionary = 
     [NSDictionary dictionaryWithObjectsAndKeys:
@@ -265,7 +273,7 @@
 - (IBAction)testTwoKeyPressed:(id)sender {
     // Run tests
     CalculatorBrain *testBrain = [self brain];
-    
+
     // Setup the brain
     [testBrain pushOperand:3.25];
     [testBrain pushOperand:6];
