@@ -83,6 +83,36 @@
     return [set containsObject:operation];
 }
 
++ (BOOL)isWrappedInParens:(NSString *)str {
+    return ([str hasPrefix:@"("] && [str hasSuffix:@")"]);
+}
+
+//
+// formatSingleOperandExpression withOperator
+//
++ (NSString *)formatSingleOperandExpression:(NSString *)str withOperator:(NSString *)opr {
+    NSString *description = @"";
+    if ([self isWrappedInParens:str]) {
+        description = [NSString stringWithFormat:@"%@%@", opr, str];
+    } else {
+        description = [NSString stringWithFormat:@"%@(%@)", opr, str];
+    }
+    return description;
+}
+
+//
+// formatTwoOperandExpression withOperator
+//
++ (NSString *)formatTwoOperandExpression:(NSString *)str1 second:(NSString *)str2 withOperator:(NSString *)opr {
+    NSString *description = @"";
+    if ([opr isEqualToString:@"+"] || [opr isEqualToString:@"-"]) {
+        description = [NSString stringWithFormat:@"%@ %@ %@", str1, opr, str2];
+    } else {
+        description = [NSString stringWithFormat:@"(%@ %@ %@)", str1, opr, str2];
+    }
+    return description;
+}
+
 //
 // variablesUsedInProgram
 //
@@ -123,59 +153,39 @@
         NSString *operation = topOfStack;
         // Addition
         if ([operation isEqualToString:@"+"]) {
-            NSString *second = [self popDescriptionOffStack:stack];
-            NSString *first  = [self popDescriptionOffStack:stack];
-            if (( [first compare:@"(" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame) && 
-                ( [second compare:@")" options:0 range:NSMakeRange(second.length-1, 1)] == NSOrderedSame)) {
-                description = [NSString stringWithFormat:@"(%@ + %@)", first, second];
-            } else {
-                description = [NSString stringWithFormat:@"(%@ + %@)", first, second];
-            }
+            NSString *str2 = [self popDescriptionOffStack:stack];
+            NSString *str1  = [self popDescriptionOffStack:stack];
+            description = [self formatTwoOperandExpression:str1 second:str2 withOperator:@"+"]; 
         // Multiplication
         } else if ([operation isEqualToString:@"*"]) {
-            NSString *second = [self popDescriptionOffStack:stack];
-            NSString *first  = [self popDescriptionOffStack:stack];
-            description = [NSString stringWithFormat:@"(%@ * %@)", first, second];
+            NSString *str2 = [self popDescriptionOffStack:stack];
+            NSString *str1  = [self popDescriptionOffStack:stack];
+            description = [self formatTwoOperandExpression:str1 second:str2 withOperator:@"*"]; 
         // Subtraction
         } else if ([operation isEqualToString:@"-"]) {
-            NSString *second = [self popDescriptionOffStack:stack];
-            NSString *first  = [self popDescriptionOffStack:stack];
-            description = [NSString stringWithFormat:@"(%@ - %@)", first, second];
+            NSString *str2 = [self popDescriptionOffStack:stack];
+            NSString *str1  = [self popDescriptionOffStack:stack];
+            description = [self formatTwoOperandExpression:str1 second:str2 withOperator:@"-"]; 
         // Division
         } else if ([operation isEqualToString:@"/"]) {
-            NSString *second = [self popDescriptionOffStack:stack];
-            NSString *first  = [self popDescriptionOffStack:stack];
-            description = [NSString stringWithFormat:@"(%@ / %@)", first, second];
+            NSString *str2 = [self popDescriptionOffStack:stack];
+            NSString *str1  = [self popDescriptionOffStack:stack];
+            description = [self formatTwoOperandExpression:str1 second:str2 withOperator:@"/"]; 
         // Pi
         } else if ([operation isEqualToString:@"π"]) {
             description = @"π";        
         // sin
         } else if ([operation isEqualToString:@"sin"]) {
-            NSString *first  = [self popDescriptionOffStack:stack];
-            if (( [first compare:@"(" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame) && 
-                ( [first compare:@")" options:0 range:NSMakeRange(first.length-1, 1)] == NSOrderedSame)) {
-                description = [NSString stringWithFormat:@"sin%@", first];
-            } else {
-                description = [NSString stringWithFormat:@"sin(%@)", first];
-            }
+            NSString *str  = [self popDescriptionOffStack:stack];
+            description = [self formatSingleOperandExpression:str withOperator:@"sin"];
         // cos
         } else if ([operation isEqualToString:@"cos"]) {
-            NSString *first  = [self popDescriptionOffStack:stack];
-            if (( [first compare:@"(" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame) && 
-                ( [first compare:@")" options:0 range:NSMakeRange(first.length-1, 1)] == NSOrderedSame)) {
-                description = [NSString stringWithFormat:@"cos%@", first];
-            } else {
-                description = [NSString stringWithFormat:@"cos(%@)", first];
-            }
+            NSString *str  = [self popDescriptionOffStack:stack];
+            description = [self formatSingleOperandExpression:str withOperator:@"cos"];
         // sqrt
         } else if ([operation isEqualToString:@"sqrt"]) {
-            NSString *first  = [self popDescriptionOffStack:stack];
-            if (( [first compare:@"(" options:0 range:NSMakeRange(0, 1)] == NSOrderedSame) && 
-                ( [first compare:@")" options:0 range:NSMakeRange(first.length-1, 1)] == NSOrderedSame)) {
-                description = [NSString stringWithFormat:@"sqrt%@", first];
-            } else {
-                description = [NSString stringWithFormat:@"sqrt(%@)", first];
-            }
+            NSString *str  = [self popDescriptionOffStack:stack];
+            description = [self formatSingleOperandExpression:str withOperator:@"sqrt"];
         // CLEAR
         } else if ([operation isEqualToString:@"CLEAR"]) {
             [stack removeAllObjects];
@@ -195,13 +205,14 @@
 + (NSString *)descriptionOfProgram:(id)program {
     // Main stack
     NSMutableArray *stack;
-    NSMutableArray *expressionStack;
+    NSMutableArray *expressionArray;
     
     // Check that program isKindOfClass: NSArray
     if ([program isKindOfClass:[NSArray class]]) {
         stack = [program mutableCopy];
-        if (!expressionStack) {
-            expressionStack = [[NSMutableArray alloc] init];
+        // Create array to hold program expressions
+        if (!expressionArray) {
+            expressionArray = [[NSMutableArray alloc] init];
         }
     } else {
         return @"Program not of Type NSArray!";
@@ -211,11 +222,11 @@
     while (stack.count > 0) {
         // add objects to the beginning of the array so
         // program displays expressions in chronological order
-        [expressionStack insertObject:[self popDescriptionOffStack:stack] atIndex:0];
+        [expressionArray insertObject:[self popDescriptionOffStack:stack] atIndex:0];
     }
     
     // Seperate programs by comma 
-    return [expressionStack componentsJoinedByString:@", "]; 
+    return [expressionArray componentsJoinedByString:@", "]; 
 }
 
 //
@@ -283,6 +294,9 @@
     if ([program isKindOfClass:[NSArray class]]) {
         stack = [program mutableCopy];
     }
+    bool test = [self isWrappedInParens:@"(sldkfjsdlkjfsd lskdjflk)"];
+    
+
     // iterate over each entry in stack (program)
     for (int i=0; i < [stack count]; i++) {
         id obj = [stack objectAtIndex:i]; 
