@@ -217,7 +217,6 @@
         // CLEAR
         } else if ([operation isEqualToString:@"CLEAR"]) {
             [stack removeAllObjects];
-            ;
         // Handle variables
         } else if ([self isVariable:operation]) {
             description = topOfStack;
@@ -270,7 +269,8 @@
     double result = 0;
     
     id topOfStack = [stack lastObject];
-    if (topOfStack) [stack removeLastObject];
+    if (topOfStack) [stack removeLastObject]; else return nil;
+
     
     if ([topOfStack isKindOfClass:[NSNumber class]]) {
         result  = [topOfStack doubleValue];
