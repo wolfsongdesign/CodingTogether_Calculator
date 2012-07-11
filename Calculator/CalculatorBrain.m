@@ -43,7 +43,14 @@
 }
 
 //
-// pushOperand
+// pushOperation
+//
+- (void)pushOperation:(NSString *)operator {
+    [self.programStack addObject:operator];
+}
+
+//
+// pushVariable
 //
 - (void)pushVariable:(NSString *)variable {
     [self.programStack addObject:variable];
@@ -53,7 +60,7 @@
 // performOperation
 //
 - (double)performOperation:(NSString *)operation {
-    [self.programStack addObject:operation];
+    [self pushOperation:operation];
     // call the class method
     // better to use [self class] than CalculatorBrain due to inheritance
     return [[self class] runProgram:self.program];
@@ -67,17 +74,35 @@
 }
 
 //
+// isOperand
+//
++ (BOOL)isOperand:(NSString *)operation {
+    // Set of operands
+    NSSet *set = [NSSet setWithObjects: @"+", @"*", @"-", @"/", @"π", @"sin", @"cos", @"sqrt", @"CLEAR", nil];
+    
+    return [set containsObject:operation];
+}
+
+//
 // variablesUsedInProgram
 //
 + (NSSet *)variablesUsedInProgram:(id)program {
-    // check for variables used
-    NSSet *variablesSetUsedInProgram;
+    NSSet *variableSet;
     //
-    if (!variablesSetUsedInProgram) {
-        variablesSetUsedInProgram =[[NSSet alloc]init];
+    if (!variableSet) {
+        variableSet =[[NSSet alloc] init];
     }
+    // Check if variables are used in program
+    for (id obj in program) {
+        // looking for variable (ie a NSString but not an operand)
+        if ([obj isKindOfClass:[NSString class]] && ![self isOperand:obj]) {
+            variableSet = [variableSet setByAddingObject:obj];
+        }
+    }
+    // Assignment requires nil (not empty set) to be sent back
+    if ([variableSet count] == 0) variableSet = nil;
 
-    return variablesSetUsedInProgram;
+    return variableSet;
 }
 
 //
@@ -154,6 +179,7 @@
         // CLEAR
         } else if ([operation isEqualToString:@"CLEAR"]) {
             [stack removeAllObjects];
+        // Handle variables
         } else if ([operation isEqualToString:@"variable"]) {
             description = topOfStack;
         }
@@ -237,6 +263,7 @@
         } else if ([operation isEqualToString:@"sqrt"]) {
             double num = [self popOperandOffStack:stack];
             result = sqrt(num);
+        // CLEAR
         } else if ([operation isEqualToString:@"CLEAR"]) {
             [stack removeAllObjects];
         }
@@ -248,16 +275,31 @@
 // runProgram
 //
 + (double)runProgram:(id)program {
-    NSMutableArray *stack;
-    if ([program isKindOfClass:[NSArray class]]) {
-        stack = [program mutableCopy];
-    }
-    return [self popOperandOffStack:stack];
+    // Call runProgram with a nil dictionary
+    return [self runProgram:program usingVariableValues:nil];
 }
 
 +(double)runProgram:(id)program usingVariableValues:(NSDictionary *)variableValues {
     NSMutableArray *stack;
-
+    if ([program isKindOfClass:[NSArray class]]) {
+        stack = [program mutableCopy];
+    }
+    // iterate over each entry in stack (program)
+    for (int i=0; i < [stack count]; i++) {
+        id obj = [stack objectAtIndex:i]; 
+        
+        // looking for variable (ie a NSString but not an operand)
+        if ([obj isKindOfClass:[NSString class]] && ![self isOperand:obj]) {  
+            // found variable
+            id value = [variableValues objectForKey:obj];         
+            // If value is not NSNumber, set it to zero
+            if (![value isKindOfClass:[NSNumber class]]) {
+                value = [NSNumber numberWithInt:0];
+            }        
+            // Replace program variable with value.
+            [stack replaceObjectAtIndex:i withObject:value];
+        }     
+    }  
     return [self popOperandOffStack:stack];
 }
 

@@ -83,8 +83,9 @@
 
     // Push operand on stack
     [self.brain pushOperand:[displayString doubleValue]];
+    // FIXME
     // Set label
-    self.programDescriptionLabel.text = [[CalculatorBrain class] descriptionOfProgram:self.brain.program];
+//    self.programDescriptionLabel.text = [[CalculatorBrain class] descriptionOfProgram:self.brain.program];
 }
 
 //
@@ -134,6 +135,7 @@
         self.userEnteredADecimal = NO;
         return;
     }
+    // FIXME
     // Probably too verbose due to corner cases
     if (lengthOfString > 1) {
         // Check display for length == 2 
@@ -200,6 +202,69 @@
     self.programDescriptionLabel.text = [CalculatorBrain descriptionOfProgram:[self.brain program]];
     self.display.text = [NSString stringWithFormat:@"%g", result];
 }
+
+//
+//
+//
+- (IBAction)testOneKeyPressed:(id)sender {
+    // run tests
+    CalculatorBrain *testBrain = [self brain];
+    
+    // Setup the brain
+    [testBrain pushVariable:@"x"];
+    [testBrain pushVariable:@"x"];
+    [testBrain pushOperation:@"*"];
+    [testBrain pushVariable:@"y"];
+    [testBrain pushVariable:@"y"];
+    [testBrain pushOperation:@"*"];
+    [testBrain pushOperation:@"+"];
+    [testBrain pushOperation:@"sqrt"];  
+    
+    // Retrieve the program
+    NSArray *program = testBrain.program;
+    
+    // Setup the dictionary
+    NSDictionary *dictionary = 
+    [NSDictionary dictionaryWithObjectsAndKeys:
+     [NSNumber numberWithDouble:3], @"x",
+     [NSNumber numberWithDouble:4], @"y", nil];
+    
+    // Run the program with variables
+    NSLog(@"Program result = %g", [CalculatorBrain runProgram:program usingVariableValues:dictionary]);
+    
+    // Display program description
+    self.programDescriptionLabel.text=[[CalculatorBrain class] descriptionOfProgram:self.brain.program];
+    
+
+    // Display variables used
+    // Set of used variables
+    NSSet *variablesUsedSet = [CalculatorBrain variablesUsedInProgram:program];
+    // Array of key value pairs
+    NSMutableArray *variablesArray = [[NSMutableArray alloc] init];
+    // Use enumerator to iterate over Set
+    NSEnumerator *e = [variablesUsedSet objectEnumerator];
+    id object;
+    while (object = [e nextObject]) {
+        NSString *val = [dictionary valueForKey:object];
+        [variablesArray insertObject:[NSString stringWithFormat:@"%@ = %@", object, val] atIndex:0];
+    }
+    // Set variable display
+    self.variableValueLabel.text = [variablesArray componentsJoinedByString:@", "];
+
+}
+
+//
+//
+//
+- (IBAction)testTwoKeyPressed:(id)sender {
+}
+
+//
+//
+//
+- (IBAction)testThreeKeyPressed:(id)sender {
+}
+
 
 - (void)viewDidUnload {
     [self setDisplay:nil];
