@@ -209,7 +209,6 @@
     
     // Step through stack
     while (stack.count > 0) {
-        NSLog(@"Expressions: %@", expressionStack);
         // add objects to the beginning of the array so
         // program displays expressions in chronological order
         [expressionStack insertObject:[self popDescriptionOffStack:stack] atIndex:0];
