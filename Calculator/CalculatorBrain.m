@@ -269,7 +269,7 @@
     double result = 0;
     
     id topOfStack = [stack lastObject];
-    if (topOfStack) [stack removeLastObject]; else return nil;
+    if (topOfStack) [stack removeLastObject];
 
     
     if ([topOfStack isKindOfClass:[NSNumber class]]) {
